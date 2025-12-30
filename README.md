@@ -178,3 +178,8 @@ It depends on which linux distro and version you choose (see available images at
 # Daily builds
 
 Images are automatically built daily to get the newest version of OpenSSH provided by the package managers.
+
+# References
+
+https://diditho.com/2025/08/12/install-and-setup-atmoz-sftp-server-on-debian-12-using-docker/
+
