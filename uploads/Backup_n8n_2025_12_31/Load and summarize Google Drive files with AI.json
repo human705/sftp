@@ -1,0 +1,180 @@
+[
+  {
+    "updatedAt": "2025-12-17T13:15:43.907Z",
+    "createdAt": "2025-12-17T13:15:43.907Z",
+    "id": "SErl8Mpp7hzIawWK",
+    "name": "Load and summarize Google Drive files with AI",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "96d41f6a-3534-4286-a514-c39fa3100897",
+        "name": "When clicking \"Execute Workflow\"",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          368,
+          240
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "id": "8fc1ced3-3007-4a18-9619-b7c72589d784",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "position": [
+          768,
+          464
+        ],
+        "typeVersion": 1.2
+      },
+      {
+        "parameters": {
+          "dataType": "binary",
+          "options": {}
+        },
+        "id": "e12e4360-50e6-421a-ba95-8474fb06448c",
+        "name": "Default Data Loader",
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "position": [
+          960,
+          464
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "chunkSize": 3000
+        },
+        "id": "244ed66f-1dde-4a56-90ec-cb31644f3d5a",
+        "name": "Token Splitter1",
+        "type": "@n8n/n8n-nodes-langchain.textSplitterTokenSplitter",
+        "position": [
+          1040,
+          608
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": {
+            "__rl": true,
+            "mode": "url",
+            "value": "https://drive.google.com/file/d/11Koq9q53nkk0F5Y8eZgaWJUVR03I4-MM/view"
+          },
+          "options": {}
+        },
+        "id": "7a2b2f4c-8153-4cac-9bb2-45c46f28f8a5",
+        "name": "Google Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "position": [
+          592,
+          240
+        ],
+        "typeVersion": 3
+      },
+      {
+        "parameters": {
+          "operationMode": "documentLoader",
+          "options": {}
+        },
+        "id": "e803a016-a9e7-4af2-bca2-05f9243196b2",
+        "name": "Summarization Chain",
+        "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+        "position": [
+          816,
+          240
+        ],
+        "typeVersion": 2
+      }
+    ],
+    "connections": {
+      "Google Drive": {
+        "main": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Token Splitter1": {
+        "ai_textSplitter": [
+          [
+            {
+              "node": "Default Data Loader",
+              "type": "ai_textSplitter",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Default Data Loader": {
+        "ai_document": [
+          [
+            {
+              "node": "Summarization Chain",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking \"Execute Workflow\"": {
+        "main": [
+          [
+            {
+              "node": "Google Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateId": "1962"
+    },
+    "pinData": {},
+    "versionId": "5d76ffd9-ee45-4e80-b3b7-6a8beb6ca82d",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-17T13:15:43.912Z",
+        "createdAt": "2025-12-17T13:15:43.912Z",
+        "role": "workflow:owner",
+        "workflowId": "SErl8Mpp7hzIawWK",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

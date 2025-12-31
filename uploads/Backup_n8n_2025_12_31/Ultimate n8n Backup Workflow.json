@@ -1,0 +1,238 @@
+[
+  {
+    "updatedAt": "2025-12-30T14:14:49.023Z",
+    "createdAt": "2025-12-30T14:14:49.023Z",
+    "id": "0dr4LooDJ5UHo7Ex",
+    "name": "Ultimate n8n Backup Workflow",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtMinute": 5
+              }
+            ]
+          }
+        },
+        "id": "a0f20064-809f-410e-9105-59bdc0a9992a",
+        "name": "Daily Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1,
+        "position": [
+          480,
+          -96
+        ]
+      },
+      {
+        "parameters": {
+          "protocol": "sftp",
+          "operation": "execute"
+        },
+        "id": "4f46b19b-e5f4-44e8-bb60-e2d9702cef1e",
+        "name": "Cleanup Old Backup Folders",
+        "type": "n8n-nodes-base.ftp",
+        "typeVersion": 1,
+        "position": [
+          688,
+          -96
+        ],
+        "credentials": {
+          "sftp": {
+            "id": "01EiVJnFXIeXla0a",
+            "name": "sFTP-Docker01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "827c854f-3412-4040-8566-c093f916803b",
+        "name": "Set Folder Name",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3,
+        "position": [
+          880,
+          -96
+        ]
+      },
+      {
+        "parameters": {
+          "protocol": "sftp",
+          "operation": "createDirectory"
+        },
+        "id": "e157e9b9-9e24-45c1-b807-5c3531efad0a",
+        "name": "Create Backup Folder (sFTP)",
+        "type": "n8n-nodes-base.ftp",
+        "typeVersion": 1,
+        "position": [
+          1088,
+          -96
+        ],
+        "credentials": {
+          "sftp": {
+            "id": "01EiVJnFXIeXla0a",
+            "name": "sFTP-Docker01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "filters": {},
+          "requestOptions": {}
+        },
+        "id": "787decc2-e602-44f5-bf57-a3670dcaaff3",
+        "name": "Get All Workflows",
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1,
+        "position": [
+          1280,
+          -96
+        ],
+        "credentials": {
+          "n8nApi": {
+            "id": "9zRnCK18h0WQpLrU",
+            "name": "n8n account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "functionCode": "return items.map(item => {\n  const jsonString = JSON.stringify(item.json, null, 2);\n  return {\n    json: {\n      name: item.json.name\n    },\n    binary: {\n      data: {\n        data: Buffer.from(jsonString),\n        mimeType: 'application/json',\n        fileName: `${item.json.name}.json`\n      }\n    }\n  };\n});"
+        },
+        "id": "39f9cdb0-77de-472d-8e8a-092777e43cf9",
+        "name": "Convert Workflows to Files",
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [
+          1488,
+          -96
+        ]
+      },
+      {
+        "parameters": {
+          "protocol": "sftp",
+          "operation": "upload",
+          "path": "=/upload/{{$('Set Folder Name').item.json.folderName}}/"
+        },
+        "id": "063b8059-f54d-402c-846e-22d615f0975e",
+        "name": "Upload Files to SFTP",
+        "type": "n8n-nodes-base.ftp",
+        "typeVersion": 1,
+        "position": [
+          1680,
+          -96
+        ],
+        "credentials": {
+          "sftp": {
+            "id": "01EiVJnFXIeXla0a",
+            "name": "sFTP-Docker01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "protocol": "sftp",
+          "operation": "execute"
+        },
+        "id": "1bf03ed0-6314-4d8c-bf45-303fc0e664d7",
+        "name": "ZIP Backup Folder",
+        "type": "n8n-nodes-base.ftp",
+        "typeVersion": 1,
+        "position": [
+          1888,
+          -96
+        ],
+        "credentials": {
+          "sftp": {
+            "id": "01EiVJnFXIeXla0a",
+            "name": "sFTP-Docker01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "protocol": "sftp",
+          "operation": "execute"
+        },
+        "id": "76adf743-b24a-4c75-b9de-f0916d133a98",
+        "name": "Delete Raw Backup Folder",
+        "type": "n8n-nodes-base.ftp",
+        "typeVersion": 1,
+        "position": [
+          2080,
+          -96
+        ],
+        "credentials": {
+          "sftp": {
+            "id": "01EiVJnFXIeXla0a",
+            "name": "sFTP-Docker01"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "functionCode": "const workflowCount = $items(\"convert-to-files\", 0, 0).length || $items(\"Convert Workflows to Files\", 0, 0).length || items.length;\n\nreturn [\n  {\n    json: {\n      folderName: $json[\"folderName\"] || $item(0).$node[\"Set Folder Name\"].json[\"folderName\"],\n      workflowCount,\n      zipPath: `/upload/zips/${$item(0).$node[\"Set Folder Name\"].json[\"folderName\"]}.zip`\n    }\n  }\n];"
+        },
+        "id": "df8e08c9-b63a-4f7b-a96d-ee91340e91d8",
+        "name": "Aggregate Stats",
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [
+          2288,
+          -96
+        ]
+      },
+      {
+        "parameters": {
+          "chatId": "-1002156646091",
+          "text": "n8n Backup Completed Successfully\n\nFolder: {{$json.folderName}}\nZIP: {{$json.zipPath}}\nWorkflows: {{$json.workflowCount}}\nTime: {{$now}}",
+          "additionalFields": {
+            "parse_mode": "none"
+          }
+        },
+        "id": "ef85488f-9c40-4a44-a45c-baee6139d321",
+        "name": "Telegram Notification",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          2480,
+          -96
+        ],
+        "webhookId": "78c79d21-7ab4-44b2-ad19-8fa779412f2e",
+        "credentials": {
+          "telegramApi": {
+            "id": "32671F2XlpG6HV0x",
+            "name": "Telegram account"
+          }
+        }
+      }
+    ],
+    "connections": {},
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "692516a8-b658-4ec3-b23d-158d3f4ce76e",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-30T14:14:49.027Z",
+        "createdAt": "2025-12-30T14:14:49.027Z",
+        "role": "workflow:owner",
+        "workflowId": "0dr4LooDJ5UHo7Ex",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

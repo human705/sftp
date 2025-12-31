@@ -1,0 +1,79 @@
+[
+  {
+    "updatedAt": "2025-12-05T15:34:28.000Z",
+    "createdAt": "2025-12-04T17:09:26.684Z",
+    "id": "0MGdv8IIuzLY9TVf",
+    "name": "CheckWebSite",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "URL"
+              }
+            ]
+          }
+        },
+        "id": "6b6c53fd-7823-4a79-b226-3637a69d2939",
+        "typeVersion": 1.1,
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          464,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "url": "http://10.1.0.221:8090",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          672,
+          240
+        ],
+        "id": "9ab348bb-b757-4012-a6a4-cb34b2456afd",
+        "name": "CheckMyWebSite",
+        "onError": "continueRegularOutput"
+      }
+    ],
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "CheckMyWebSite",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": {},
+    "versionId": "a5fce1bc-11ae-418a-8dab-7bc46313b236",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-04T17:09:26.689Z",
+        "createdAt": "2025-12-04T17:09:26.689Z",
+        "role": "workflow:owner",
+        "workflowId": "0MGdv8IIuzLY9TVf",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

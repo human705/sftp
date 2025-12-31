@@ -1,0 +1,91 @@
+[
+  {
+    "updatedAt": "2025-12-05T23:13:15.000Z",
+    "createdAt": "2025-12-04T20:25:48.115Z",
+    "id": "OfMuH24W6YJWGN1b",
+    "name": "SubSSHNode",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "authentication": "privateKey",
+          "command": "={{ $json.command }}"
+        },
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          720,
+          64
+        ],
+        "id": "ff665e64-e803-4a75-a58d-4a87c30504d1",
+        "name": "Execute a command",
+        "credentials": {
+          "sshPrivateKey": {
+            "id": "3ThdMSSaGRY6G6Xp",
+            "name": "dockertest1"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "command"
+              }
+            ]
+          }
+        },
+        "id": "23cb64c0-a78c-432d-a25e-45463bd3b6cb",
+        "typeVersion": 1.1,
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          512,
+          64
+        ]
+      }
+    ],
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Execute a command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute a command": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "e4938344-e7b5-4fa3-8691-7b645cde8771",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-04T20:25:48.121Z",
+        "createdAt": "2025-12-04T20:25:48.121Z",
+        "role": "workflow:owner",
+        "workflowId": "OfMuH24W6YJWGN1b",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

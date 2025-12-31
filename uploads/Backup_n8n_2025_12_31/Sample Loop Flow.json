@@ -1,0 +1,494 @@
+[
+  {
+    "updatedAt": "2025-12-31T16:45:30.000Z",
+    "createdAt": "2025-12-31T16:45:11.333Z",
+    "id": "S8qGq0QNmQnVeXHy",
+    "name": "Sample Loop Flow",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "7705c5f4-0726-4721-a751-602724caef92",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "position": [
+          -176,
+          400
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "8063917d-4a60-4e57-b888-9bd4fa29f1e3",
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "position": [
+          272,
+          400
+        ],
+        "typeVersion": 3
+      },
+      {
+        "parameters": {
+          "resume": "webhook",
+          "httpMethod": "POST",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "feda4558-3337-48ae-935d-806580c55636",
+        "name": "Webhook Callback Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          976,
+          432
+        ],
+        "webhookId": "5cd058b4-48c8-449a-9c09-959a5b8a2b48",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "jsCode": "let json = $('If All Finished').first().json;\nif (!json.finishedSet) json.finishedSet = [];\nlet finishedItemId = $('Webhook Callback Wait').item.json.body.finishedItemId;\nif (!json.finishedSet[finishedItemId]) json.finishedSet.push(finishedItemId);\nreturn [json];"
+        },
+        "id": "bbdcc14c-1b8c-4b73-af26-327a21bbc939",
+        "name": "Update finishedSet",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          1200,
+          432
+        ],
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "193ab8f1-0e23-491c-914e-b8b26b0160f7",
+                "name": "finishedSet",
+                "type": "array",
+                "value": "[]"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a32bf8e7-1e9f-49f0-aace-cb93c9fe12a6",
+        "name": "Initialize finishedSet",
+        "type": "n8n-nodes-base.set",
+        "position": [
+          496,
+          272
+        ],
+        "executeOnce": true,
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "jsCode": "return [\n  {requestId: 'req4567'},\n  {requestId: 'req8765'},\n  {requestId: 'req1234'}\n];"
+        },
+        "id": "4a9af278-200f-4f20-a38a-6b17260471dc",
+        "name": "Simulate Multi-Item for Parallel Processing",
+        "type": "n8n-nodes-base.code",
+        "position": [
+          32,
+          400
+        ],
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 1,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "385c3149-3623-4dd2-9022-770c32f82421",
+                "operator": {
+                  "type": "number",
+                  "operation": "gte"
+                },
+                "leftValue": "={{ $json.finishedSet.length }}",
+                "rightValue": "={{ $('Simulate Multi-Item for Parallel Processing').all().length }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "723ae9cb-f74a-4c80-a864-0c69c8e72d66",
+        "name": "If All Finished",
+        "type": "n8n-nodes-base.if",
+        "position": [
+          720,
+          272
+        ],
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $env.WEBHOOK_URL }}/webhook/parallel-subworkflow-target",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "callbackurl",
+                "value": "={{ $execution.resumeUrl }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "requestItemId",
+                "value": "={{ $json.requestId }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "f7679571-d5b4-4f71-bba9-9d573bc9a4a6",
+        "name": "Start Sub-Workflow via Webhook",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          432,
+          640
+        ],
+        "typeVersion": 4.2
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "204fa3be-28b3-44ed-a07e-2ff483772494",
+        "name": "Acknowledge Finished",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          1040,
+          656
+        ],
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "content": "### Start Multiple Sub-Workflows Asynchronously\n* Note: Callback/Webhook \"internal\" Base-URL should be configured in the n8n instance to reference the k8s service name and internal port.",
+          "height": 109,
+          "width": 390,
+          "color": 3
+        },
+        "id": "38f4811d-7ac1-42c9-9919-7c98fb9c09c5",
+        "name": "Sticky Note",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -32,
+          592
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "content": "### Pseudo-Synchronously Wait for All Sub-Workflows to finish",
+          "height": 80,
+          "width": 283,
+          "color": 3
+        },
+        "id": "1068b9db-e1ee-49d2-a4f8-75378cff5bab",
+        "name": "Sticky Note1",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          992,
+          352
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {},
+        "id": "ac0cbe30-735f-484d-ad03-783502819b36",
+        "name": "Continue Workflow (noop)",
+        "type": "n8n-nodes-base.noOp",
+        "position": [
+          1040,
+          192
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "content": "## Main/Parent Workflow\n* This starts multiple executions of the sub-workflow in parallel and then loops until they all report back.",
+          "height": 684.1818181818179,
+          "width": 1577.931818181817
+        },
+        "id": "f95265fd-f065-401d-87c7-6f7404ceb6fe",
+        "name": "Sticky Note3",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -208,
+          160
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "content": "### Sub-Workflow\n**Cut/Paste this into a separate workflow, and activate it!!!**",
+          "height": 189.2194473140495,
+          "width": 1477.331211260329
+        },
+        "id": "e0cdb172-0dad-4b06-94fd-d1054df91ee2",
+        "name": "Sticky Note2",
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -192,
+          880
+        ],
+        "typeVersion": 1
+      },
+      {
+        "parameters": {},
+        "id": "e7617699-4ef1-4cbc-b4af-ebd084aacf4e",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "position": [
+          704,
+          928
+        ],
+        "webhookId": "2d62e5c2-ad4a-4e90-a075-7ca5212e015a",
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $('Webhook').item.json.headers.callbackurl }}",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "finishedItemId",
+                "value": "={{ $('Webhook').item.json.body.requestItemId }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "55d8806e-0f72-4516-be9b-5278522435f6",
+        "name": "Call Resume on Parent Workflow",
+        "type": "n8n-nodes-base.httpRequest",
+        "position": [
+          912,
+          928
+        ],
+        "retryOnFail": true,
+        "typeVersion": 4.2,
+        "waitBetweenTries": 3000,
+        "notes": "The callback resumes the parent workflow and reports which item finished.  There could be a race condition if the parent workflow was just resumed by a different sub-workflow but hasn't entered a webhook-wait again yet.  The delay and retry mitigates for the possibility that multiple subtasks complete and call back at once."
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ \n{\n  \"finishedItemId\": $json.body.requestItemId\n}\n}}",
+          "options": {}
+        },
+        "id": "22b65c11-b9ec-433b-a465-0cb96d3364c8",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "position": [
+          480,
+          928
+        ],
+        "typeVersion": 1.1
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "parallel-subworkflow-target",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "5ec5765d-c839-421c-9dbe-4ccbf630b6b1",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "position": [
+          256,
+          928
+        ],
+        "webhookId": "14776b45-77d7-4220-808f-2d0a38bec4de",
+        "typeVersion": 2
+      }
+    ],
+    "connections": {
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Call Resume on Parent Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If All Finished": {
+        "main": [
+          [
+            {
+              "node": "Continue Workflow (noop)",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Webhook Callback Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "Initialize finishedSet",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Start Sub-Workflow via Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update finishedSet": {
+        "main": [
+          [
+            {
+              "node": "Acknowledge Finished",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Acknowledge Finished": {
+        "main": [
+          [
+            {
+              "node": "If All Finished",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Callback Wait": {
+        "main": [
+          [
+            {
+              "node": "Update finishedSet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Initialize finishedSet": {
+        "main": [
+          [
+            {
+              "node": "If All Finished",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start Sub-Workflow via Webhook": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Simulate Multi-Item for Parallel Processing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simulate Multi-Item for Parallel Processing": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": {},
+    "versionId": "876317a7-88a6-4707-9443-8a663a7a5372",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-31T16:45:11.337Z",
+        "createdAt": "2025-12-31T16:45:11.337Z",
+        "role": "workflow:owner",
+        "workflowId": "S8qGq0QNmQnVeXHy",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

@@ -1,0 +1,123 @@
+[
+  {
+    "updatedAt": "2025-12-04T23:30:47.000Z",
+    "createdAt": "2025-12-04T22:49:02.774Z",
+    "id": "REc6LJGUgMdFMOQN",
+    "name": "SubSSHNode2",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "loggedCommand",
+                "value": "={{$json[\"command\"]}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Log Command",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          -80,
+          288
+        ],
+        "id": "21598715-6a31-425c-b320-87987b06e8c3"
+      },
+      {
+        "parameters": {
+          "authentication": "privateKey",
+          "command": "={{$json[\"command\"]}}"
+        },
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          144,
+          288
+        ],
+        "id": "20043d63-6dd6-40f5-bf17-7740445d1326",
+        "name": "Run SSH Command",
+        "credentials": {
+          "sshPrivateKey": {
+            "id": "3ThdMSSaGRY6G6Xp",
+            "name": "dockertest1"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "command"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -320,
+          288
+        ],
+        "id": "8278c7fd-494e-4f1d-95d9-ff26f68190b8",
+        "name": "When Executed by Another Workflow"
+      }
+    ],
+    "connections": {
+      "Log Command": {
+        "main": [
+          [
+            {
+              "node": "Run SSH Command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Run SSH Command": {
+        "main": [
+          []
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Log Command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "21bf5522-d39b-48be-96f8-378d7739b027",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-04T22:49:02.777Z",
+        "createdAt": "2025-12-04T22:49:02.777Z",
+        "role": "workflow:owner",
+        "workflowId": "REc6LJGUgMdFMOQN",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

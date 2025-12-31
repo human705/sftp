@@ -1,0 +1,307 @@
+[
+  {
+    "updatedAt": "2025-12-25T17:29:04.000Z",
+    "createdAt": "2025-12-01T18:43:27.058Z",
+    "id": "nmIudPcjTa8pp0co",
+    "name": "Test AI",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          -128,
+          -80
+        ],
+        "id": "0c63ee2e-0d9c-4945-b3b1-da312ee860cf",
+        "name": "When chat message received",
+        "webhookId": "4cc7c777-a174-4eeb-824b-7787d3e293c4"
+      },
+      {
+        "parameters": {
+          "description": "Use this to run the docker commands for troubleshooting. ",
+          "workflowId": {
+            "__rl": true,
+            "value": "OfMuH24W6YJWGN1b",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/OfMuH24W6YJWGN1b",
+            "cachedResultName": "SubSSHNode"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "command": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('command', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "command"
+            ],
+            "schema": [
+              {
+                "id": "command",
+                "displayName": "command",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string"
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          688,
+          224
+        ],
+        "id": "65f55edd-3985-498a-a7c2-35ba5cd9260c",
+        "name": "Docker tool"
+      },
+      {
+        "parameters": {
+          "description": "Use this to check if the website is up. Returns \"up 😎👍\" or \"down 😞👎\".",
+          "workflowId": {
+            "__rl": true,
+            "value": "0MGdv8IIuzLY9TVf",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/0MGdv8IIuzLY9TVf",
+            "cachedResultName": "CheckWebSite"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "URL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "URL"
+            ],
+            "schema": [
+              {
+                "id": "URL",
+                "displayName": "URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "canBeUsedToMatch": true,
+                "type": "string",
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2,
+        "position": [
+          480,
+          240
+        ],
+        "id": "21ba08d1-b363-40f2-9fc8-eeb48b6ac1d3",
+        "name": "HTTP tool"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          -208,
+          208
+        ],
+        "id": "b6352486-0120-4e6a-88b3-56ea4fe112ca",
+        "name": "Google Gemini Chat Model",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "jpoXulg1mZ3vsx0c",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "You are T1000, a new IT Administrator for NetworkChuck. Your sole responsibility is to ensure the website at http://10.1.0.221:8090/ is operational. When asked if the website is up, follow these steps to check and restore its status:\n\n1. Access the website using the URL  http://10.1.0.221:8090 and provided HTTP tool.\n\n2. The website is considered up and operational only if the response contains the exact HTML content: <h1>NetworkChuck Coffee</h1>.\n\n3. If the website is not up via the HTTP tool, use the Docker tool to execute one command at a time. To check if the website container is running execute the command \"docker ps | grep website\"\n\n4. If the container is not running, check the exit code using the command docker inspect website --format='{{.State.ExitCode}}'.\n\n5. Retrieve the recent logs using the command docker logs website --tail 10.\n\n6. If the container is not running, attempt to restart it using the command docker container start website.\n\n7. After attempting to restart, use the HTTP tool again to verify if the website is now up and returns <h1>NetworkChuck Coffee</h1>.\n\n8. Report the website's status as either \"up 😎👍\" or \"down 😞👎\". If the website is down, include an explanation based on the HTTP tool response (e.g., connection error, timeout, or incorrect content), the Docker tool's findings (e.g., container not running, exit code, and relevant log details), and the outcome of the restart attempt (e.g., successful or failed, with any errors encountered)."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3,
+        "position": [
+          192,
+          0
+        ],
+        "id": "2e96c32c-112f-48d0-a0d2-29c18d157e9a",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "contextWindowLength": 15
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          224,
+          208
+        ],
+        "id": "4dc1eef5-e003-4571-8690-e4006922f7bb",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "model": "mistral:7b",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+        "typeVersion": 1,
+        "position": [
+          -64,
+          144
+        ],
+        "id": "b9fc2489-fc56-4f9d-9830-46f819cabe44",
+        "name": "Ollama local",
+        "credentials": {
+          "ollamaApi": {
+            "id": "9BJXSsvFHHueFoNl",
+            "name": "Ollama_local"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "gpt-oss:20b",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+        "typeVersion": 1,
+        "position": [
+          48,
+          224
+        ],
+        "id": "c1e2d53c-2a66-43e3-8a13-ed402326efd1",
+        "name": "Ollama Cloud",
+        "credentials": {
+          "ollamaApi": {
+            "id": "jGdLB9YukmnTeDNj",
+            "name": "ollama_Cloud"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "connectionType": "http"
+        },
+        "type": "n8n-nodes-mcp.mcpClientTool",
+        "typeVersion": 1,
+        "position": [
+          352,
+          256
+        ],
+        "id": "f56ebfd0-5257-4281-b4b0-6de2ccc33527",
+        "name": "MCP Client (DEV1)",
+        "credentials": {
+          "mcpClientHttpApi": {
+            "id": "VQQ4KzWUDPX1WRjJ",
+            "name": "mcp-gateway-dev1"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When chat message received": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Docker tool": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP tool": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          []
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          []
+        ]
+      },
+      "Ollama local": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MCP Client (DEV1)": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "ade40662-1d83-4d3f-96fb-109f8e354162",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-01T18:43:27.060Z",
+        "createdAt": "2025-12-01T18:43:27.060Z",
+        "role": "workflow:owner",
+        "workflowId": "nmIudPcjTa8pp0co",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

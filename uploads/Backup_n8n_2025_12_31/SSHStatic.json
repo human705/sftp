@@ -1,0 +1,121 @@
+[
+  {
+    "updatedAt": "2025-12-11T23:45:26.000Z",
+    "createdAt": "2025-12-05T00:08:43.349Z",
+    "id": "rDHdz7QATYt97I0T",
+    "name": "SSHStatic",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "authentication": "privateKey",
+          "command": "=docker ps"
+        },
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          -48,
+          288
+        ],
+        "id": "73aff758-cc20-429d-8ce9-da9a653a1ca1",
+        "name": "Run SSH Command",
+        "credentials": {
+          "sshPrivateKey": {
+            "id": "3ThdMSSaGRY6G6Xp",
+            "name": "dockertest1"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -320,
+          288
+        ],
+        "id": "08c5b7f3-1129-4df4-8baa-9325743dc931",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3c102209-8216-45b9-a7f8-4766c4f75650",
+                "name": "Executed",
+                "value": "True",
+                "type": "string"
+              },
+              {
+                "id": "e825d134-218b-4bc0-b054-1a94ca7efd3a",
+                "name": "stderr",
+                "value": "={{ $json.stderr }}",
+                "type": "string"
+              },
+              {
+                "id": "0632faaa-0616-41dd-8771-e5fe67aab6ad",
+                "name": "stdout",
+                "value": "={{ $json.stdout }}",
+                "type": "string"
+              },
+              {
+                "id": "2b9e57d8-b169-455a-b4bf-31c3da312785",
+                "name": "code",
+                "value": "={{ $json.code }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          288
+        ],
+        "id": "d93f8ce7-de79-4962-a8c9-b9aec252578e",
+        "name": "Edit Fields",
+        "alwaysOutputData": true
+      }
+    ],
+    "connections": {
+      "Run SSH Command": {
+        "main": [
+          []
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "2d436c13-98e4-40cd-82e2-8c2a4819190e",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-05T00:08:43.353Z",
+        "createdAt": "2025-12-05T00:08:43.353Z",
+        "role": "workflow:owner",
+        "workflowId": "rDHdz7QATYt97I0T",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

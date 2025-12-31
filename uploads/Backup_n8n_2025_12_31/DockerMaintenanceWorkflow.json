@@ -1,0 +1,211 @@
+[
+  {
+    "updatedAt": "2025-12-01T22:44:41.000Z",
+    "createdAt": "2025-12-01T19:57:42.989Z",
+    "id": "njxuuwRHGliJHb4t",
+    "name": "DockerMaintenanceWorkflow",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "hour": 7
+              }
+            ]
+          }
+        },
+        "name": "Cron",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          -1264,
+          64
+        ],
+        "id": "76ef6beb-6483-4c53-afce-3680924d0c5a"
+      },
+      {
+        "parameters": {
+          "authentication": "privateKey",
+          "command": "docker system prune -a -f"
+        },
+        "name": "Prune Docker",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          -1072,
+          64
+        ],
+        "id": "e55b94d8-0ec8-49ea-a324-2f46c90ed38e",
+        "credentials": {
+          "sshPrivateKey": {
+            "id": "3ThdMSSaGRY6G6Xp",
+            "name": "SSH Password account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "privateKey",
+          "command": "docker restart obsidian"
+        },
+        "name": "Restart Container",
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          -864,
+          64
+        ],
+        "id": "cdb60efb-428d-4947-869a-52eb77b6aa09",
+        "credentials": {
+          "sshPrivateKey": {
+            "id": "3ThdMSSaGRY6G6Xp",
+            "name": "SSH Password account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "number": [
+              {
+                "value1": "={{ $json[\"code\"] }}",
+                "operation": "equal",
+                "value2": "0"
+              }
+            ]
+          }
+        },
+        "name": "Check Restart Success",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          -672,
+          64
+        ],
+        "id": "8add4167-ad8e-4a2d-ba64-52c1de0a08e5"
+      },
+      {
+        "parameters": {
+          "chatId": "-1002156646091",
+          "text": "={{`✅ Docker maintenance completed successfully!\nPrune Output:\n${$node[\"Prune Docker\"].json[\"stdout\"]}\n\nRestart Output:\n${$node[\"Restart Container\"].json[\"stdout\"]}`}}",
+          "additionalFields": {}
+        },
+        "name": "Telegram Success",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          -464,
+          0
+        ],
+        "id": "82ead7e4-449b-4563-b37d-34b74b11850f",
+        "webhookId": "314daea6-dc21-4339-8612-51d163b15ce3",
+        "credentials": {
+          "telegramApi": {
+            "id": "32671F2XlpG6HV0x",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "-1002156646091",
+          "text": "={{`❌ Docker restart failed!\nExit Code: ${$node[\"Restart Container\"].json[\"code\"]}\nError: ${$node[\"Restart Container\"].json[\"stderr\"]}`}}",
+          "additionalFields": {}
+        },
+        "name": "Telegram Failure",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1,
+        "position": [
+          -464,
+          112
+        ],
+        "id": "bff3059d-b9f9-43bc-b3d8-f7c3276cf4db",
+        "webhookId": "0c41fae1-046a-480d-baa8-6a3a68a9ea11",
+        "credentials": {
+          "telegramApi": {
+            "id": "32671F2XlpG6HV0x",
+            "name": "Telegram account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Cron": {
+        "main": [
+          [
+            {
+              "node": "Prune Docker",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prune Docker": {
+        "main": [
+          [
+            {
+              "node": "Restart Container",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Restart Container": {
+        "main": [
+          [
+            {
+              "node": "Check Restart Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Restart Success": {
+        "main": [
+          [
+            {
+              "node": "Telegram Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Telegram Failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "de0613cb-83e9-4d6a-8409-6d7fea174ac2",
+    "activeVersionId": null,
+    "triggerCount": 1,
+    "shared": [
+      {
+        "updatedAt": "2025-12-01T19:57:42.993Z",
+        "createdAt": "2025-12-01T19:57:42.993Z",
+        "role": "workflow:owner",
+        "workflowId": "njxuuwRHGliJHb4t",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

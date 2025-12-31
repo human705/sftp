@@ -1,0 +1,79 @@
+[
+  {
+    "updatedAt": "2025-12-04T21:37:43.000Z",
+    "createdAt": "2025-12-04T21:33:20.864Z",
+    "id": "cnvqIo5C3nWHrtj7",
+    "name": "TestSSH",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "4ca15699-e8a8-4cdb-b8ab-247b18ff1b21",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "authentication": "privateKey",
+          "command": "docker container stop website",
+          "cwd": "/home/me"
+        },
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          208,
+          0
+        ],
+        "id": "5fe24f9c-be6f-4b49-92d2-6f6a5e204d69",
+        "name": "Execute a command",
+        "credentials": {
+          "sshPrivateKey": {
+            "id": "3ThdMSSaGRY6G6Xp",
+            "name": "dockertest1"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Execute a command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "ae8a17c9-9fd9-4b28-b478-a9eb25505560",
+    "activeVersionId": null,
+    "triggerCount": 0,
+    "shared": [
+      {
+        "updatedAt": "2025-12-04T21:33:20.868Z",
+        "createdAt": "2025-12-04T21:33:20.868Z",
+        "role": "workflow:owner",
+        "workflowId": "cnvqIo5C3nWHrtj7",
+        "projectId": "LrwBhs4hpwqC6IJN"
+      }
+    ],
+    "activeVersion": null,
+    "tags": []
+  }
+]

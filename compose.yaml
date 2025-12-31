@@ -10,16 +10,9 @@ services:
     ports:
       - "${SFTP_PORT}:22"  # Map SFTP port from .env file
     volumes:
-      # sudo chown -R 1000:1000 ./uploads
-      # - ${SFTP_PATH}:/home/${SFTP_USER}/upload  # Mount local folder
       - ./uploads:/home/${SFTP_USER}/upload  # Mount local folder
     env_file:
       - .env
-    # environment:
-    #   - PGID=${PGID}
-    #   - PUID=${PUID}
-
-
     command: ${SFTP_USER}:${SFTP_PASSWORD}:1000:100
     networks:
       - sftp-bridge-network
